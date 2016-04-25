@@ -1,4 +1,4 @@
-package com.example.localalbum.ui;
+package com.example.localalbum.test;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,13 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.example.localalbum.R;
+import com.example.localalbum.common.LocalImageHelper;
 import com.example.localalbum.common.MultiMediaBean;
+import com.example.localalbum.widget.FilterImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -21,32 +26,35 @@ import java.util.List;
 
 
 /**
- * 
  * @author zhou.jianlong
- *
  */
 public class ImageGridAdapter extends BaseAdapter {
 
-    private final List<MultiMediaBean> multiMediaBean;
+    private final List<LocalImageHelper.LocalFile> multiMediaBean;
+    private Context _mContext;
 
     private LayoutInflater inflater;
 
     private DisplayImageOptions options;
 
-    public ImageGridAdapter(Context context, List<MultiMediaBean> list) {
+    public ImageGridAdapter(Context context, List<LocalImageHelper.LocalFile> list) {
         this.multiMediaBean = list;
+        _mContext = context;
         inflater = LayoutInflater.from(context);
+        //设置ImageLoader参数
         options = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.default_pic)
+                .cacheInMemory(true)
+                .cacheOnDisk(false)
                 .showImageForEmptyUri(R.drawable.default_pic)
-                .showImageOnFail(R.drawable.default_pic).cacheInMemory(true)
-                .cacheOnDisk(true).considerExifParams(true)
-                .bitmapConfig(Bitmap.Config.RGB_565).build();
+                .showImageOnFail(R.drawable.default_pic)
+                .showImageOnLoading(R.drawable.default_pic)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .displayer(new SimpleBitmapDisplayer()).build();
     }
 
     @Override
     public int getCount() {
-        if(null!=multiMediaBean){
+        if (null != multiMediaBean) {
             return multiMediaBean.size();
         } else {
             return 0;
@@ -78,40 +86,8 @@ public class ImageGridAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
 
-        String path = multiMediaBean.get(position).getFrontCoverUrl();
-        if(null == multiMediaBean.get(position).getMultiMediaId()&&(!path.startsWith("http"))){
-            path = "file://" + path;
-        }
-        
-        ImageLoader.getInstance().displayImage(
-                path , holder.imageView,
-                options, new SimpleImageLoadingListener() {
-                    @Override
-                    public void onLoadingStarted(String imageUri, View view) {
-                        holder.progressBar.setProgress(0);
-                        holder.progressBar.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onLoadingFailed(String imageUri, View view,
-                            FailReason failReason) {
-                        holder.progressBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onLoadingComplete(String imageUri, View view,
-                            Bitmap loadedImage) {
-                        holder.progressBar.setVisibility(View.GONE);
-                    }
-                }, new ImageLoadingProgressListener() {
-                    @Override
-                    public void onProgressUpdate(String imageUri, View view,
-                            int current, int total) {
-                        holder.progressBar.setProgress(Math.round(100.0f
-                                * current / total));
-                    }
-                });
-
+        String path = multiMediaBean.get(position).getThumbnailUri();
+        ImageLoader.getInstance().displayImage(path, holder.imageView, options, null, null);
         return view;
     }
 

@@ -99,7 +99,6 @@ public class DynamicPost extends BaseActivity implements OnClickListener, Matrix
         mSend = findViewById(R.id.post_send);
         mContent = (EditText) findViewById(R.id.post_content);
         textRemain = (TextView) findViewById(R.id.post_text_remain);
-//        picRemain = (TextView) findViewById(R.id.post_pic_remain);
         add = (ImageView) findViewById(R.id.post_add_pic);
         picContainer = (LinearLayout) findViewById(R.id.post_pic_container);
         scrollView = (HorizontalScrollView) findViewById(R.id.post_scrollview);
@@ -317,14 +316,13 @@ public class DynamicPost extends BaseActivity implements OnClickListener, Matrix
                         ImageLoader.getInstance().displayImage(files.get(i).getThumbnailUri(), new ImageViewAware(imageView), options,
                                 null, null, files.get(i).getOrientation());
                         imageView.setOnClickListener(this);
-//                        pictures.add(files.get(i));
-//                        if (pictures.size() == 9) {
-//                            add.setVisibility(View.GONE);
-//                        } else {
-//                            add.setVisibility(View.VISIBLE);
-//                        }
+                        pictures.add(files.get(i));
+                        if (pictures.size() == 9) {
+                            add.setVisibility(View.GONE);
+                        } else {
+                            add.setVisibility(View.VISIBLE);
+                        }
                         picContainer.addView(imageView, picContainer.getChildCount() - 1);
-                        picRemain.setText(pictures.size() + "/9");
                         LocalImageHelper.getInstance().setCurrentSize(pictures.size());
                     }
                     //清空选中的图片
