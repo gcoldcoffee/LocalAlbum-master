@@ -198,12 +198,24 @@ public class DynamicPost extends BaseActivity implements OnClickListener, Matrix
 //                                    hideViewPager();
 //                                }
 //                                picContainer.removeView(picContainer.getChildAt(index));
-//                                picRemain.setText(pictures.size() + "/9");
 //                                mCountView.setText((viewpager.getCurrentItem() + 1) + "/" + pictures.size());
 //                                viewpager.getAdapter().notifyDataSetChanged();
 //                                LocalImageHelper.getInstance().setCurrentSize(pictures.size());
 //                            }
 //                        }).show();
+                pictures.remove(index);
+                if (pictures.size() == 9) {
+                    add.setVisibility(View.GONE);
+                } else {
+                    add.setVisibility(View.VISIBLE);
+                }
+                if (pictures.size() == 0) {
+                    hideViewPager();
+                }
+                picContainer.removeView(picContainer.getChildAt(index));
+                mCountView.setText((viewpager.getCurrentItem() + 1) + "/" + pictures.size());
+                viewpager.getAdapter().notifyDataSetChanged();
+                LocalImageHelper.getInstance().setCurrentSize(pictures.size());
 
                 break;
             case R.id.post_send:
@@ -317,11 +329,11 @@ public class DynamicPost extends BaseActivity implements OnClickListener, Matrix
                                 null, null, files.get(i).getOrientation());
                         imageView.setOnClickListener(this);
                         pictures.add(files.get(i));
-                        if (pictures.size() == 9) {
-                            add.setVisibility(View.GONE);
-                        } else {
-                            add.setVisibility(View.VISIBLE);
-                        }
+//                        if (pictures.size() == 9) {
+//                            add.setVisibility(View.GONE);
+//                        } else {
+//                            add.setVisibility(View.VISIBLE);
+//                        }
                         picContainer.addView(imageView, picContainer.getChildCount() - 1);
                         LocalImageHelper.getInstance().setCurrentSize(pictures.size());
                     }

@@ -4,31 +4,27 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.example.localalbum.R;
 import com.example.localalbum.common.ImageUtils;
 import com.example.localalbum.common.LocalImageHelper;
-import com.example.localalbum.common.MultiMediaBean;
+import com.example.localalbum.ui.Constant;
 import com.example.localalbum.ui.LocalAlbum;
-import com.example.localalbum.widget.FilterImageView;
+import com.example.localalbum.widget.MatrixImageView;
 import com.example.localalbum.widget.NoScrollGridView;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestActivity extends Activity {
+public class TestActivity extends Activity implements MatrixImageView.OnSingleTapListener {
     private NoScrollGridView gv;
     private ArrayList<LocalImageHelper.LocalFile> _listMultiMediaBean = new ArrayList<>();
     private Context _mContext;
     private ImageGridAdapter _imageGridAdapter;
+    private View pagerContainer;
+    private View scrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +38,8 @@ public class TestActivity extends Activity {
 
     private void initWidget() {
         gv = (NoScrollGridView)findViewById(R.id.gv);
+        pagerContainer = findViewById(R.id.pagerview);
+        scrollView = findViewById(R.id.sv_content);
     }
 
 
@@ -58,9 +56,15 @@ public class TestActivity extends Activity {
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = null;
                 if (i == 0) {
-                    Intent intent = new Intent(TestActivity.this, LocalAlbum.class);
+                    intent = new Intent(TestActivity.this, LocalAlbum.class);
                     startActivityForResult(intent, ImageUtils.REQUEST_CODE_GETIMAGE_BYCROP);
+                }else{
+                    intent = new Intent(TestActivity.this,ShowBigPic.class);
+                    intent.putExtra(Constant.INDEX_BIG_PIC,i);
+                    intent.putExtra(Constant.PICTURES_TO_BIG_PIC,_listMultiMediaBean);
+                    startActivityForResult(intent, Constant.SHOW_BIG_PIC);
                 }
             }
         });
@@ -87,8 +91,25 @@ public class TestActivity extends Activity {
                 //清空选中的图片
                 LocalImageHelper.getInstance().getCheckedItems().clear();
                 break;
+            case Constant.SHOW_BIG_PIC:
+                if(resultCode==RESULT_OK){
+                    _listMultiMediaBean.clear();
+                    LocalImageHelper.LocalFile addPic = new LocalImageHelper.LocalFile();
+                    addPic.setThumbnailUri("drawable://" + R.drawable.default_add_pic);
+                    _listMultiMediaBean.add(addPic);
+                    _listMultiMediaBean.addAll((List<LocalImageHelper.LocalFile>)data.getSerializableExtra(Constant.PICTURES_BIG_PIC_RETURN));
+                    _imageGridAdapter.notifyDataSetChanged();
+                }
+                break;
             default:
                 break;
         }
+    }
+
+
+
+    @Override
+    public void onSingleTap() {
+
     }
 }

@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 import com.example.localalbum.AppContext;
 
 import java.io.File;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +18,8 @@ import java.util.Map;
 /**
  * Created by linjizong on 15/6/11.
  */
-public class LocalImageHelper {
+public class LocalImageHelper implements Serializable{
+    private static final long serialVersionUID = -9027997889895324795L;
     private static LocalImageHelper instance;
     private final AppContext context;
     final List<LocalFile> checkedItems = new ArrayList<>();
@@ -217,7 +219,9 @@ public class LocalImageHelper {
         } else {
         }
     }
-    public static class LocalFile {
+    public static class LocalFile implements Serializable{
+
+        private static final long serialVersionUID = -3076583202816443771L;
         private String originalUri;//原图URI
         private String thumbnailUri;//缩略图URI
         private int orientation;//图片旋转角度
